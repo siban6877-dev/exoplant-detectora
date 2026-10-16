@@ -4,28 +4,28 @@ import requests
 st.set_page_config(page_title="Kepler Exoplanet Detector", page_icon="🌌", layout="wide")
 
 # ==============================================================================
-#          YOUR EXACT UPLOADED IMAGE APPLIED AS BULLETPROOF BACKGROUND
+#             ANDROMEDA GALAXY BACKGROUND VISUAL STYLING ONLY
 # ==============================================================================
 st.markdown(
     """
     <style>
-    /* Targets all primary Streamlit containers to force your exact image to display */
-    .stApp, [data-testid="stAppViewContainer"], [data-testid="stAppViewBlockContainer"] {
-        background-image: linear-gradient(rgba(5, 7, 18, 0.75), rgba(5, 7, 18, 0.75)), 
-                          url('https://imgur.com') !important;
+    /* Injects the high-definition Andromeda background image securely across the app layout */
+    [data-testid="stAppViewContainer"] {
+        background-image: linear-gradient(rgba(5, 7, 18, 0.75), rgba(8, 12, 28, 0.85)), 
+                          url('https://wikimedia.org');
         background-size: cover !important;
         background-position: center !important;
         background-attachment: fixed !important;
     }
     
-    /* Make the top navigation bar header completely transparent */
+    /* Transparent navigation headers to ensure text scrolls nicely on the wallpaper */
     [data-testid="stHeader"] {
         background: transparent !important;
     }
     
-    /* Force high contrast white text over your dark background image */
+    /* Optional high contrast adjustments to ensure readability over dark stars */
     .stApp {
-        color: #ffffff !important;
+        color: #e0e5f5 !important;
     }
     </style>
     """,
@@ -62,7 +62,7 @@ if user_input := st.chat_input("Ask Kepler anything about the universe..."):
                 full_prompt = system_instruction + user_input
                 
                 # Fetching response via robust requests library (automatically fixes space character errors!)
-                url = f"https://pollinations.ai{full_prompt}"
+                url = f"https://text.pollinations.ai/{full_prompt}"
                 response = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}, timeout=15)
                 
                 if response.status_code == 200:
