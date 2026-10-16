@@ -1,6 +1,5 @@
 import streamlit as st
-import json
-import urllib.request
+import requests
 
 st.set_page_config(page_title="Kepler Exoplanet Detector", page_icon="🌌", layout="wide")
 st.title("🌌 Kepler Exoplanet Detector AI")
@@ -24,22 +23,24 @@ if user_input := st.chat_input("Ask Kepler anything about the universe..."):
         st.write(user_input)
     st.session_state.messages.append({"role": "user", "content": user_input})
     
-    # Generate response from keyless AI model
+    # Generate response from keyless AI model using requests
     with st.chat_message("assistant"):
         with st.spinner("Consulting mission archives... 🛰️"):
             try:
-                # Constructing a clean prompt text
+                # Add personality system instruction
                 system_instruction = "You are Kepler, a friendly NASA astronomer helping middle school students. Answer the following question simply: "
                 full_prompt = system_instruction + user_input
                 
-                # Connect to a free open-access server
-                url = f"https://pollinations.ai{urllib.parse.quote(full_prompt)}"
-                req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+                # Fetching response via robust requests library (automatically fixes space character errors!)
+                url = f"https://text.pollinations.ai/{full_prompt}"
+                response = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}, timeout=15)
                 
-                with urllib.request.urlopen(req) as response:
-                    reply_text = response.read().decode('utf-8')
+                if response.status_code == 200:
+                    reply_text = response.text
+                else:
+                    reply_text = "My communication antenna is hazy right now. Try sending that query one more time!"
             except Exception as error:
-                reply_text = "Sorry, my deep space communication link encountered an error. Try asking again!"
+                reply_text = f"Connection error: Could not reach mission control. Please try again!"
             
             st.write(reply_text)
             
