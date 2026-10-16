@@ -4,41 +4,28 @@ import requests
 st.set_page_config(page_title="Kepler Exoplanet Detector", page_icon="🌌", layout="wide")
 
 # ==============================================================================
-#                 ANDROMEDA GALAXY BACKGROUND VISUAL THEME OVERLAY
+#             ANDROMEDA GALAXY BACKGROUND VISUAL STYLING ONLY
 # ==============================================================================
 st.markdown(
     """
     <style>
-    /* Force background onto the exact containers Streamlit relies on */
-    .stApp, [data-testid="stAppViewContainer"], [data-testid="stAppViewBlockContainer"] {
+    /* Injects the high-definition Andromeda background image securely across the app layout */
+    [data-testid="stAppViewContainer"] {
         background-image: linear-gradient(rgba(5, 7, 18, 0.75), rgba(8, 12, 28, 0.85)), 
-                          url('https://wikimedia.org') !important;
+                          url('https://wikimedia.org');
         background-size: cover !important;
         background-position: center !important;
         background-attachment: fixed !important;
-        color: #e0e5f5 !important;
     }
     
-    /* Transparent navigation bar header */
+    /* Transparent navigation headers to ensure text scrolls nicely on the wallpaper */
     [data-testid="stHeader"] {
         background: transparent !important;
     }
     
-    /* Translucent glassmorphism sidebar menu matching your color palette */
-    section[data-testid="stSidebar"] {
-        background-color: rgba(6, 10, 26, 0.95) !important;
-        border-right: 2px solid rgba(0, 162, 255, 0.25);
-    }
-    
-    /* High-contrast styling for texts and titles */
-    h1 {
-        color: #ffffff !important;
-        text-shadow: 0px 0px 15px rgba(0, 162, 255, 0.6);
-    }
-    
-    div[data-testid="stChatInput"] {
-        background-color: rgba(12, 19, 44, 0.95) !important;
-        border: 2px solid rgba(0, 150, 255, 0.5) !important;
+    /* Optional high contrast adjustments to ensure readability over dark stars */
+    .stApp {
+        color: #e0e5f5 !important;
     }
     </style>
     """,
@@ -75,7 +62,7 @@ if user_input := st.chat_input("Ask Kepler anything about the universe..."):
                 full_prompt = system_instruction + user_input
                 
                 # Fetching response via robust requests library (automatically fixes space character errors!)
-                url = f"https://pollinations.ai{full_prompt}"
+                url = f"https://text.pollinations.ai/{full_prompt}"
                 response = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}, timeout=15)
                 
                 if response.status_code == 200:
