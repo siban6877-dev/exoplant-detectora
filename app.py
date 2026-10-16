@@ -1,5 +1,6 @@
 import streamlit as st
 import requests
+import urllib.parse  # CRITICAL INJECTION: Translates spaces and punctuation safely
 
 # Set up page configurations with a wide screen layout structure
 st.set_page_config(
@@ -18,7 +19,7 @@ st.markdown(
     /* Direct framework target properties inject your exact image asset reliably */
     [data-testid="stAppViewContainer"], [data-testid="stAppViewBlockContainer"] {
         background-image: linear-gradient(rgba(5, 7, 18, 0.8), rgba(8, 12, 28, 0.9)), 
-                          url('https://upload.wikimedia.org/wikipedia/commons/9/98/Andromeda_Galaxy_%28with_h-alpha%29.jpg');
+                          url('https://wikimedia.org');
         background-size: cover !important;
         background-position: center !important;
         background-attachment: fixed !important;
@@ -103,8 +104,10 @@ if user_input := st.chat_input("Ask Kepler anything about the universe..."):
                 system_instruction = "You are Kepler, a friendly NASA astronomer helping middle school students. Answer the following question simply: "
                 full_prompt = system_instruction + user_input
                 
-                # Fetching response via robust requests library 
-                url = f"https://pollinations.ai{full_prompt}"
+                # ENCODING FIX: Safely parse special characters so the API server parses it reliably
+                encoded_prompt = urllib.parse.quote(full_prompt)
+                url = f"https://pollinations.ai{encoded_prompt}"
+                
                 response = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}, timeout=15)
                 
                 if response.status_code == 200:
