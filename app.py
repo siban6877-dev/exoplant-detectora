@@ -2,12 +2,16 @@ import streamlit as st
 import requests
 import streamlit.components.v1 as components
 
-# 1. Page Settings Configuration
+# 1. ALWAYS FIRST: Set up the page config to allow a wide-screen dashboard layout
 st.set_page_config(page_title="Kepler Exoplanet Detector", page_icon="🌌", layout="wide")
 
-# 2. Split Screen Layout (Left Column for AI Chat, Right Column for Space Map Simulator)
+# 2. DEFINING THE COLUMNS UP FRONT (This fixes the NameError crash!)
+# Left side takes up 45% of the screen width, Right side takes up 55%
 left_col, right_col = st.columns([1, 1.2], gap="large")
 
+# ==========================================
+# LEFT COLUMN: YOUR ENTIRE WORKING AI CHAT
+# ==========================================
 with left_col:
     st.title("🌌 Kepler Exoplanet Detector AI")
     st.write("Welcome! This chatbot uses an open-access AI brain to discuss anything about space, astronomy, and exoplanets.")
@@ -49,7 +53,9 @@ with left_col:
                 
         st.session_state.messages.append({"role": "assistant", "content": reply_text})
 
-# 3. Sidebar Calculation Mechanics
+# ==========================================
+# SIDEBAR PANEL MANAGEMENT
+# ==========================================
 st.sidebar.header("🔬 Telescope Telemetry Input")
 prad = st.sidebar.number_input("Planetary Radius (Earth Sizes)", min_value=0.1, max_value=50.0, value=1.0)
 teq = st.sidebar.number_input("Planet Temperature (Kelvin)", min_value=50, max_value=3000, value=288)
@@ -61,11 +67,14 @@ if st.sidebar.button("🛰️ Scan Star"):
     else:
         st.sidebar.error("❌ **False Positive:** Hostile environments detected. Life cannot form here.")
 
-# 4. Inject Smooth 3D WebGL Space Map Simulation into the Right Column
+# ==========================================
+# RIGHT COLUMN: SMOOTH 3D GALAXY SIMULATOR
+# ==========================================
 with right_col:
     st.subheader("🪐 Live Interstellar Navigation System")
-    st.caption("Left-click and drag to rotate. Scroll to zoom in/out of star systems.")
+    st.caption("Left-click and drag to rotate the starfield. Scroll to zoom in/out.")
     
+    # Custom HTML container containing an auto-rotating WebGL field of neon stars
     threejs_universe_html = """
     <!DOCTYPE html>
     <html>
@@ -78,23 +87,13 @@ with right_col:
         </style>
     </head>
     <body>
-        <div id="canvas-container" style="width: 100vw; height: 600px;"></div>
+        <div id="canvas-container" style="width: 100vw; height: 580px;"></div>
         <script>
             const container = document.getElementById('canvas-container');
             const width = container.clientWidth || 600;
-            const height = 600;
+            const height = 580;
 
             const scene = new THREE.Scene();
-            
-            // Background cosmic image configuration
-            const textureLoader = new THREE.TextureLoader();
-            textureLoader.load(
-                'https://unsplash.com', 
-                function(texture) {
-                    scene.background = texture;
-                }
-            );
-
             const camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 4000);
             const renderer = new THREE.WebGLRenderer({ antialias: true });
             
@@ -107,16 +106,18 @@ with right_col:
             controls.maxDistance = 1500;
             controls.minDistance = 50;
 
+            // Generate an immersive star density layer
             const geometry = new THREE.BufferGeometry();
             const vertices = [];
             const colors = [];
 
-            for (let i = 0; i < 6000; i++) {
+            for (let i = 0; i < 7000; i++) {
                 vertices.push(THREE.MathUtils.randFloatSpread(2500));
                 vertices.push(THREE.MathUtils.randFloatSpread(2500));
                 vertices.push(THREE.MathUtils.randFloatSpread(2500));
 
-                const r = Math.random() * 0.4 + 0.6;
+                // Bright stellar shades (neon blues and purples)
+                const r = Math.random() * 0.3 + 0.2;
                 const g = Math.random() * 0.5 + 0.5; 
                 const b = 1.0;
                 colors.push(r, g, b);
@@ -126,10 +127,10 @@ with right_col:
             geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
 
             const material = new THREE.PointsMaterial({
-                size: 3.5,
+                size: 3.0,
                 vertexColors: true,
                 transparent: true,
-                opacity: 0.95,
+                opacity: 0.9,
                 sizeAttenuation: true
             });
 
@@ -140,8 +141,8 @@ with right_col:
 
             function animateScene() {
                 requestAnimationFrame(animateScene);
-                starField.rotation.y += 0.00012;
-                starField.rotation.x += 0.00004;
+                starField.rotation.y += 0.00015; // Slow ambient cosmic spin
+                starField.rotation.x += 0.00005;
                 controls.update();
                 renderer.render(scene, camera);
             }
@@ -158,4 +159,5 @@ with right_col:
     </html>
     """
     
-    components.html(threejs_universe_html, height=620, scrolling=False)
+    # Renders the container into the right column
+    components.html(threejs_universe_html, height=600, scrolling=False)
