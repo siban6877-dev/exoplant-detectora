@@ -218,34 +218,32 @@ simulated_solar_flux = round(float(((teq / 278.0) ** 4)), 3)
 with col_stats:
     st.metric(label="Estimated Escape Velocity", value=f"{simulated_escape_velocity} km/s", delta="Earth Ref: 11.2 km/s")
     st.metric(label="Calculated Stellar Energy Flux", value=f"{simulated_solar_flux} x Earth", delta="-0.045 Flux Offset")
-    
-==============================================================================
-
-
-EXECUTE TRANSIT PREDICTION ACTION LAYER
-
-
-==============================================================================
-
+    # ==============================================================================
+#                   EXECUTE TRANSIT PREDICTION ACTION LAYER
+# ==============================================================================
 if st.sidebar.button("🛰️ Execute AI Transit Analysis", use_container_width=True):
-st.sidebar.subheader("AI Prediction Metrics")
-with st.sidebar.spinner("Computing predictive neural vectors..."):
-time.sleep(0.6) # Simulates computing calculation overhead latency for presentation effect
-# Earth Similarity Index (ESI) global calculation algorithms
-radius_weight_index = (1.0 - abs((prad - 1.0) / (prad + 1.0))) ** 0.5
-temperature_weight_index = (1.0 - abs((teq - 288.0) / (teq + 288.0))) ** 0.5
-computed_esi_score = round(radius_weight_index * temperature_weight_index, 3)
-st.sidebar.metric(label="Earth Similarity Index (ESI)", value=f"{computed_esi_score} / 1.0")
-if computed_esi_score >= esi_weight:
-st.sidebar.success(
-f"🍀 Candidate Confirmed!\n\n"
-f"AI classification engines confirm high likelihood of structural biosignatures. "
-f"Approx Temperature: {teq-273}°C. Target star system designated for immediate deep-space exploration priority arrays."
-)
-else:
-st.sidebar.error(
-f"❌ Anomalous False Positive\n\n"
-f"Environmental variables yield a structural threat profile. Atmospheric composition non-viable. "
-f"System tagged as non-habitable exoplanetary core."
-)
+    st.sidebar.subheader("AI Prediction Metrics")
+    
+    with st.sidebar.spinner("Computing predictive neural vectors..."):
+        time.sleep(0.6) # Simulates computing calculation overhead latency for presentation effect
+    
+    # Earth Similarity Index (ESI) global calculation algorithms
+    radius_weight_index = (1.0 - abs((prad - 1.0) / (prad + 1.0))) ** 0.5
+    temperature_weight_index = (1.0 - abs((teq - 288.0) / (teq + 288.0))) ** 0.5
+    computed_esi_score = round(radius_weight_index * temperature_weight_index, 3)
+    
+    st.sidebar.metric(label="Earth Similarity Index (ESI)", value=f"{computed_esi_score} / 1.0")
+    
+    if computed_esi_score >= esi_weight:
+        st.sidebar.success(
+            f"🍀 **Candidate Confirmed!**\n\n"
+            f"AI classification engines confirm high likelihood of structural biosignatures. "
+            f"Approx Temperature: {teq-273}°C. Target star system designated for immediate deep-space exploration priority arrays."
+        )
+    else:
+        st.sidebar.error(
+            f"❌ **Anomalous False Positive**\n\n"
+            f"Environmental variables yield a structural threat profile. Atmospheric composition non-viable. "
+            f"System tagged as non-habitable exoplanetary core."
+        )
 
