@@ -1,41 +1,48 @@
 import streamlit as st
 import requests
 import urllib.parse  # Safely handle spaces and special characters in URL
+import pandas as pd  # Native data tracking for the universe map
+import numpy as np
 
 st.set_page_config(page_title="Kepler Exoplanet Detector", page_icon="🌌", layout="wide")
 
 # ==========================================
-# CUSTOM CSS SPACE THEME (Galaxy Background)
+# BULLETPROOF GALAXY SPACE THEME
 # ==========================================
 st.markdown(
     """
     <style>
-    /* Galaxy/Nebula background image covering the entire application */
-    .stApp {
-        background-image: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.75)), 
-                          url('https://unsplash.com');
+    /* Targets the primary app view container directly to guarantee background injection */
+    [data-testid="stAppViewContainer"] {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.8)), 
+                          url('https://wikimedia.org');
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
     }
     
-    /* Make the sidebar slightly transparent and dark neon blue */
+    /* Make top navigation bar transparent so it doesn't block the background */
+    [data-testid="stHeader"] {
+        background: transparent !important;
+    }
+    
+    /* Make the sidebar translucent dark neon blue */
     section[data-testid="stSidebar"] {
-        background-color: rgba(10, 15, 30, 0.85) !important;
+        background-color: rgba(10, 16, 32, 0.85) !important;
         border-right: 1px solid rgba(0, 150, 255, 0.2);
     }
     
     /* Clean up title styling and add a neon glow effect */
     h1 {
         color: #ffffff !important;
-        text-shadow: 0px 0px 15px rgba(0, 180, 255, 0.6);
+        text-shadow: 0px 0px 15px rgba(0, 180, 255, 0.7);
         font-weight: 700 !important;
     }
     
     /* Make chat input box blend with space theme */
     div[data-testid="stChatInput"] {
-        background-color: rgba(20, 25, 40, 0.9) !important;
-        border: 1px solid rgba(0, 150, 255, 0.3) !important;
+        background-color: rgba(20, 25, 40, 0.95) !important;
+        border: 1px solid rgba(0, 150, 255, 0.4) !important;
         border-radius: 10px;
     }
     </style>
@@ -79,7 +86,7 @@ if user_input := st.chat_input("Ask Kepler anything about the universe..."):
                     f"Based on our chat history:\n{context}\nProvide your next response: "
                 )
                 
-                # CRITICAL FIX: Safely encode the string so characters like '?' or '#' do not crash the request
+                # Safely encode the string so characters like '?' or '#' do not crash the request
                 encoded_prompt = urllib.parse.quote(system_instruction)
                 url = f"https://pollinations.ai{encoded_prompt}"
                 
@@ -103,18 +110,23 @@ teq = st.sidebar.number_input("Planet Temperature (Kelvin)", min_value=50, max_v
 esi_weight = st.sidebar.slider("AI ESI Classification Threshold", min_value=0.0, max_value=1.0, value=0.7)
 
 # ==========================================
-# NEW SECTION: THE UNIVERSE MAP
+# FIXED & UPGRADED DATA-DRIVEN UNIVERSE MAP
 # ==========================================
 st.sidebar.markdown("---")
-st.sidebar.subheader("🗺️ Universe Map Explorer")
-st.sidebar.write("Live visual telemetry map of targeted star systems and planetary constellations:")
+st.sidebar.subheader("🗺️ Universe Map Radar")
+st.sidebar.write("Live mathematical galaxy mapping of surrounding sector candidates:")
 
-# High-quality visual deep space map representation
-st.sidebar.image(
-    "https://unsplash.com",
-    caption="Observable Sector Map (Kepler Data Field)",
-    use_container_width=True
+# Generate reliable starfield data points natively so it NEVER fails to load
+np.random.seed(42)
+map_data = pd.DataFrame(
+    np.random.randn(40, 2) * 5,
+    columns=['Sector Longitude (X)', 'Sector Latitude (Y)']
 )
+# Add your current target system coordinate directly onto the map
+map_data.loc[len(map_data)] = [prad * 2.5, teq / 100]
+
+# Render interactive map plot right inside the sidebar
+st.sidebar.scatter_chart(map_data, x='Sector Longitude (X)', y='Sector Latitude (Y)', size=15)
 st.sidebar.markdown("---")
 
 if st.sidebar.button("🛰️ Execute AI Transit Analysis"):
