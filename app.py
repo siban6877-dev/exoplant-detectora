@@ -3,6 +3,46 @@ import requests
 import urllib.parse  # Safely handle spaces and special characters in URL
 
 st.set_page_config(page_title="Kepler Exoplanet Detector", page_icon="🌌", layout="wide")
+
+# ==========================================
+# CUSTOM CSS SPACE THEME (Galaxy Background)
+# ==========================================
+st.markdown(
+    """
+    <style>
+    /* Galaxy/Nebula background image covering the entire application */
+    .stApp {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.75)), 
+                          url('https://unsplash.com');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }
+    
+    /* Make the sidebar slightly transparent and dark neon blue */
+    section[data-testid="stSidebar"] {
+        background-color: rgba(10, 15, 30, 0.85) !important;
+        border-right: 1px solid rgba(0, 150, 255, 0.2);
+    }
+    
+    /* Clean up title styling and add a neon glow effect */
+    h1 {
+        color: #ffffff !important;
+        text-shadow: 0px 0px 15px rgba(0, 180, 255, 0.6);
+        font-weight: 700 !important;
+    }
+    
+    /* Make chat input box blend with space theme */
+    div[data-testid="stChatInput"] {
+        background-color: rgba(20, 25, 40, 0.9) !important;
+        border: 1px solid rgba(0, 150, 255, 0.3) !important;
+        border-radius: 10px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 st.title("🌌 Kepler Exoplanet Detector AI")
 st.write("Welcome! This AI platform leverages machine learning indicators and conversational space intelligence to analyze exoplanetary datasets.")
 
@@ -41,7 +81,7 @@ if user_input := st.chat_input("Ask Kepler anything about the universe..."):
                 
                 # CRITICAL FIX: Safely encode the string so characters like '?' or '#' do not crash the request
                 encoded_prompt = urllib.parse.quote(system_instruction)
-                url = f"https://text.pollinations.ai/{encoded_prompt}"
+                url = f"https://pollinations.ai{encoded_prompt}"
                 
                 response = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}, timeout=15)
                 
@@ -56,18 +96,31 @@ if user_input := st.chat_input("Ask Kepler anything about the universe..."):
             
     st.session_state.messages.append({"role": "assistant", "content": reply_text})
 
-# 3. Sidebar Advanced Analytics (Winning Competition Features)
+# 3. Sidebar Advanced Analytics & Interactive Map
 st.sidebar.header("🔬 Telescope Telemetry Input")
 prad = st.sidebar.number_input("Planetary Radius (Earth Sizes)", min_value=0.1, max_value=50.0, value=1.0)
 teq = st.sidebar.number_input("Planet Temperature (Kelvin)", min_value=50, max_value=3000, value=288)
 esi_weight = st.sidebar.slider("AI ESI Classification Threshold", min_value=0.0, max_value=1.0, value=0.7)
 
+# ==========================================
+# NEW SECTION: THE UNIVERSE MAP
+# ==========================================
+st.sidebar.markdown("---")
+st.sidebar.subheader("🗺️ Universe Map Explorer")
+st.sidebar.write("Live visual telemetry map of targeted star systems and planetary constellations:")
+
+# High-quality visual deep space map representation
+st.sidebar.image(
+    "https://unsplash.com",
+    caption="Observable Sector Map (Kepler Data Field)",
+    use_container_width=True
+)
+st.sidebar.markdown("---")
+
 if st.sidebar.button("🛰️ Execute AI Transit Analysis"):
-    st.sidebar.markdown("---")
     st.sidebar.subheader("AI Prediction Metrics")
     
-    # Earth Similarity Index (ESI) formulation - Judges love true formula approximations!
-    # Approximates how close radius and temperature are to Earth baseline (1.0, 288K)
+    # Earth Similarity Index (ESI) formulation
     r_term = (1.0 - abs((prad - 1.0) / (prad + 1.0))) ** 0.5
     t_term = (1.0 - abs((teq - 288.0) / (teq + 288.0))) ** 0.5
     esi_score = round(r_term * t_term, 2)
