@@ -1,82 +1,52 @@
 import streamlit as st
 import requests
-import urllib.parse  # CRITICAL INJECTION: Translates spaces and punctuation safely
 
-# Set up page configurations with a wide screen layout structure
-st.set_page_config(
-    page_title="Kepler Exoplanet Detector AI", 
-    page_icon="🌌", 
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
+st.set_page_config(page_title="Kepler Exoplanet Detector", page_icon="🌌", layout="wide")
 
 # ==============================================================================
-#                 BULLETPROOF ANDROMEDA GALAXY VISUAL BACKGROUND OVERLAY
+#                 ANDROMEDA GALAXY BACKGROUND VISUAL THEME OVERLAY
 # ==============================================================================
 st.markdown(
     """
     <style>
-    /* Direct framework target properties inject your exact image asset reliably */
-    [data-testid="stAppViewContainer"], [data-testid="stAppViewBlockContainer"] {
-        background-image: linear-gradient(rgba(5, 7, 18, 0.8), rgba(8, 12, 28, 0.9)), 
-                          url('https://wikimedia.org');
+    /* Force background onto the exact containers Streamlit relies on */
+    .stApp, [data-testid="stAppViewContainer"], [data-testid="stAppViewBlockContainer"] {
+        background-image: linear-gradient(rgba(5, 7, 18, 0.75), rgba(8, 12, 28, 0.85)), 
+                          url('https://wikimedia.org') !important;
         background-size: cover !important;
         background-position: center !important;
         background-attachment: fixed !important;
         color: #e0e5f5 !important;
     }
     
-    /* Make top navigation headers blend seamlessly without flat block colors */
+    /* Transparent navigation bar header */
     [data-testid="stHeader"] {
         background: transparent !important;
     }
     
-    /* Premium Glassmorphism styling configuration for the Left Navigation Sidebar */
+    /* Translucent glassmorphism sidebar menu matching your color palette */
     section[data-testid="stSidebar"] {
         background-color: rgba(6, 10, 26, 0.95) !important;
         border-right: 2px solid rgba(0, 162, 255, 0.25);
-        box-shadow: 5px 0px 25px rgba(0, 0, 0, 0.7);
     }
     
-    /* Neon glow effect layout mapping for key title typography elements */
+    /* High-contrast styling for texts and titles */
     h1 {
         color: #ffffff !important;
-        text-shadow: 0px 0px 20px rgba(0, 162, 255, 0.8), 0px 0px 40px rgba(0, 80, 255, 0.4);
-        font-weight: 800 !important;
-        letter-spacing: 1px;
+        text-shadow: 0px 0px 15px rgba(0, 162, 255, 0.6);
     }
     
-    h2, h3 {
-        color: #00d2ff !important;
-        text-shadow: 0px 0px 10px rgba(0, 210, 255, 0.3);
-        font-weight: 600 !important;
-    }
-
-    /* Transform native chat input box interface to look like an operational space helmet HUD */
     div[data-testid="stChatInput"] {
         background-color: rgba(12, 19, 44, 0.95) !important;
-        border: 2px solid rgba(0, 210, 255, 0.5) !important;
-        border-radius: 12px !important;
-        box-shadow: 0px 0px 15px rgba(0, 210, 255, 0.3) !important;
-    }
-
-    /* Custom styles for metrics dashboards */
-    div[data-testid="stMetricValue"] {
-        color: #00ffcc !important;
-        font-family: 'Courier New', monospace;
-        font-weight: bold;
+        border: 2px solid rgba(0, 150, 255, 0.5) !important;
     }
     </style>
     """,
     unsafe_allow_html=True
 )
 
-# ==============================================================================
-#                               MAIN APPLICATION HEADER
-# ==============================================================================
 st.title("🌌 Kepler Exoplanet Detector AI")
 st.write("Welcome! This chatbot uses an open-access AI brain to discuss anything about space, astronomy, and exoplanets.")
-st.write("---")
 
 # 1. Setup Conversational Memory State
 if "messages" not in st.session_state:
@@ -89,7 +59,7 @@ for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.write(msg["content"])
 
-# 2. Handle Live Dynamic Chat Input Stream
+# 2. Handle Live Dynamic Chat Input
 if user_input := st.chat_input("Ask Kepler anything about the universe..."):
     # Render user prompt
     with st.chat_message("user"):
@@ -104,10 +74,8 @@ if user_input := st.chat_input("Ask Kepler anything about the universe..."):
                 system_instruction = "You are Kepler, a friendly NASA astronomer helping middle school students. Answer the following question simply: "
                 full_prompt = system_instruction + user_input
                 
-                # ENCODING FIX: Safely parse special characters so the API server parses it reliably
-                encoded_prompt = urllib.parse.quote(full_prompt)
-                url = f"https://pollinations.ai{encoded_prompt}"
-                
+                # Fetching response via robust requests library (automatically fixes space character errors!)
+                url = f"https://pollinations.ai{full_prompt}"
                 response = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}, timeout=15)
                 
                 if response.status_code == 200:
@@ -115,22 +83,19 @@ if user_input := st.chat_input("Ask Kepler anything about the universe..."):
                 else:
                     reply_text = "My communication antenna is hazy right now. Try sending that query one more time!"
             except Exception as error:
-                reply_text = "Connection error: Could not reach mission control. Please try again!"
+                reply_text = f"Connection error: Could not reach mission control. Please try again!"
             
             st.write(reply_text)
             
     st.session_state.messages.append({"role": "assistant", "content": reply_text})
 
-# ==============================================================================
-#                 SIDEBAR INPUT CONTROL INTERFACE (THE PLANET DETECTOR)
-# ==============================================================================
+# 3. Sidebar Calculation Mechanics
 st.sidebar.header("🔬 Telescope Telemetry Input")
 prad = st.sidebar.number_input("Planetary Radius (Earth Sizes)", min_value=0.1, max_value=50.0, value=1.0)
 teq = st.sidebar.number_input("Planet Temperature (Kelvin)", min_value=50, max_value=3000, value=288)
 
 if st.sidebar.button("🛰️ Scan Star"):
     st.sidebar.markdown("---")
-    # Original baseline target decision conditions
     if 0.5 <= prad <= 2.0 and 180 <= teq <= 310:
         st.sidebar.success(f"🍀 **Match Found!** A rocky world at {teq-273}°C sitting in the habitable zone!")
     else:
