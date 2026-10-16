@@ -1,8 +1,6 @@
 import streamlit as st
 import requests
-import pandas as pd
-import numpy as np
-import time
+import urllib.parse  # CRITICAL FIX: Stops the connection errors by formatting spaces
 
 st.set_page_config(page_title="Kepler Exoplanet Detector", page_icon="🌌", layout="wide")
 
@@ -35,17 +33,17 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.title("🌌 Kepler Exoplanet Detector AI")
-st.write("Welcome! This chatbot uses an open-access AI brain to discuss anything about space, astronomy, and exoplanets.")
+st.title("🌌 Kepler Space Tech AI Platform")
+st.write("Welcome to the mission control hub. Use the interactive modules below to run live simulations or consult the AI explorer.")
 st.write("---")
 
 # ==============================================================================
-#                 INTERACTIVE MULTI-PAGE WORKSPACE TABS
+#           INTERACTIVE WORKSPACE TABS FOR CHAT AND THE REAL SIMULATORS
 # ==============================================================================
 tab1, tab2, tab3 = st.tabs(["💬 Deep-Space AI Assistant", "🛰️ Self-Healing Constellation Sim", "🔬 Kepler Transit Detector"])
 
 # ------------------------------------------------------------------------------
-# TAB 1: YOUR EXACT UNTOUCHED ORIGINAL CHATBOT RUNS HERE
+# TAB 1: YOUR FIXED ORIGINAL CHATBOT UTILITY
 # ------------------------------------------------------------------------------
 with tab1:
     # 1. Setup Conversational Memory State
@@ -74,8 +72,10 @@ with tab1:
                     system_instruction = "You are Kepler, a friendly NASA astronomer helping middle school students. Answer the following question simply: "
                     full_prompt = system_instruction + user_input
                     
-                    # Fetching response via robust requests library (automatically fixes space character errors!)
-                    url = f"https://pollinations.ai{full_prompt}"
+                    # THE MASTER FIX: Safely parse text so spaces/symbols never crash the web requests
+                    encoded_prompt = urllib.parse.quote(full_prompt)
+                    url = f"https://pollinations.ai{encoded_prompt}"
+                    
                     response = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}, timeout=15)
                     
                     if response.status_code == 200:
@@ -90,56 +90,37 @@ with tab1:
         st.session_state.messages.append({"role": "assistant", "content": reply_text})
 
 # ------------------------------------------------------------------------------
-# TAB 2: SELF-HEALING CONSTELLATION SIMULATOR SCENARIO
+# TAB 2: LIVE EMBEDDED SELF-HEALING CONSTELLATION SIMULATOR
 # ------------------------------------------------------------------------------
 with tab2:
-    st.subheader("⚡ Satellite Constellation Solar Shield Simulation")
-    st.write("Two identical satellite networks face the same solar storm scenario, hardware failures, and orbital debris fields.")
+    st.subheader("⚡ Live Satellite Anomaly Avoidance Matrix")
+    st.write("This sandbox renders your operational satellite grid to test auto-routing path protocols against incoming space storms:")
     
-    col_a, col_b = st.columns(2)
-    with col_a:
-        st.markdown("### 🔴 Network A: No AI Management")
-        st.caption("Waits passively for mechanical failures to trigger ground instructions.")
-        st.metric(label="Network A Service Uptime", value="42 %", delta="-58% Critical Drop")
-        st.error("⚠️ Satellites Lost: 5 | Collisions Tracked: 2")
-        
-    with col_b:
-        st.markdown("### 🔵 Network B: AI-Managed")
-        st.caption("Predicts solar vector anomalies, isolates failing circuits, and reroutes pathways.")
-        st.metric(label="Network B Service Uptime", value="99.8 %", delta="Stabilized System", delta_color="inverse")
-        st.success("🍀 Satellites Lost: 0 | Collisions Avoided: 4")
-        
-    if st.button("🚀 Run Full Simulation Scenario", key="run_sim_btn"):
-        with st.spinner("Injecting solar flare anomaly variables into network arrays..."):
-            time.sleep(1.0)
-        st.info("📊 **Simulation Event Log:** AI agent successfully performed 4 proximity avoidance maneuvers and isolated 2 overheating thrusters.")
+    # Securely mounts the operational interactive script layout interface
+    st.components.v1.html(
+        """
+        <iframe src="https://interactives.space" style="width:100%; height:550px; border:2px solid #00a2ff; border-radius:10px; background:#060a1a;"></iframe>
+        """,
+        height=560
+    )
 
 # ------------------------------------------------------------------------------
-# TAB 3: KEPLER FIELDS TRANSIT LIGHT DETECTOR
+# TAB 3: LIVE EMBEDDED 3D MILKY WAY KEPLER TRANSIT DETECTOR
 # ------------------------------------------------------------------------------
 with tab3:
-    st.subheader("🔭 Kepler Light Curve Anomaly Scanner")
-    st.write("Fly through targeted survey sectors to execute transit detection algorithms on active star brightness variables.")
+    st.subheader("🔭 3D Kepler Field Frequency Scanner")
+    st.write("Fly through a 3D structural model of the Milky Way galaxy directly down to targeted planetary telemetry clusters:")
     
-    target_star = st.selectbox("Pick a Target Exploration Star", ["Kepler-22b", "Kepler-452b", "Kepler-186f"])
-    
-    if st.button("🔍 Run Transit Detector Array", key="run_transit_btn"):
-        with st.spinner(f"Scanning brightness curve frequency for {target_star}..."):
-            time.sleep(1.0)
-            
-        st.subheader("📈 Simulated Transit Light Curve Findings")
-        np.random.seed(42)
-        time_axis = np.linspace(0, 100, 200)
-        brightness_axis = 1.0 + np.random.normal(0, 0.005, 200)
-        brightness_axis[40:50] -= 0.03   # Simulate planet blocking star light
-        brightness_axis[130:140] -= 0.03
-        
-        chart_data = pd.DataFrame({"Timeline Days": time_axis, "Stellar Flux Intensity": brightness_axis})
-        st.line_chart(chart_data, x="Timeline Days", y="Stellar Flux Intensity")
-        st.success(f"🎯 **Periodic Dip Verified!** AI pipeline discovered a structural exoplanet signature orbiting {target_star}.")
+    # Securely mounts the actual interactive 3D transit detection simulation canvas app
+    st.components.v1.html(
+        """
+        <iframe src="https://interactives.space" style="width:100%; height:550px; border:2px solid #00ffcc; border-radius:10px; background:#060a1a;"></iframe>
+        """,
+        height=560
+    )
 
 # ==============================================================================
-# 3. Sidebar Calculation Mechanics (Your Exact Untouched Sidebar)
+# 3. Sidebar Calculation Mechanics
 # ==============================================================================
 st.sidebar.header("🔬 Telescope Telemetry Input")
 prad = st.sidebar.number_input("Planetary Radius (Earth Sizes)", min_value=0.1, max_value=50.0, value=1.0)
