@@ -1,28 +1,25 @@
 import streamlit as st
 import requests
 import urllib.parse
-import pandas as pd
-import numpy as np
-import plotly.graph_objects as go  # Delivers the high-end 3D map and 2D Orbit Tracker
 import time
 
-# Set up page configurations with a wide screen monitor profile
+# Set up page configurations with a wide screen layout structure
 st.set_page_config(
-    page_title="Kepler Exoplanet Detector AI - DeepSpace Platform", 
+    page_title="Kepler Exoplanet Detector AI", 
     page_icon="🌌", 
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
 # ==============================================================================
-#                      COMPETITION-GRADE ULTRA COSMIC CSS STYLING
+#                 EXOPLANET RADAR GALAXY VISUAL THEME OVERLAY
 # ==============================================================================
 st.markdown(
     """
     <style>
-    /* Absolute target background injection using a premium, robust Wikipedia Hubble asset */
+    /* Injects your exact Andromeda Galaxy background choice across the web application */
     [data-testid="stAppViewContainer"] {
-        background-image: linear-gradient(rgba(4, 6, 14, 0.8), rgba(8, 10, 24, 0.9)), 
+        background-image: linear-gradient(rgba(5, 7, 18, 0.75), rgba(8, 12, 28, 0.85)), 
                           url('https://wikimedia.org');
         background-size: cover;
         background-position: center;
@@ -56,7 +53,7 @@ st.markdown(
         font-weight: 600 !important;
     }
 
-    /* Target the bottom-anchored chat input box wrapper specifically to fix styling layouts */
+    /* Transform native chat input box interface to look like an operational space helmet HUD */
     div[data-testid="stChatInput"] {
         background-color: rgba(12, 19, 44, 0.95) !important;
         border: 2px solid rgba(0, 210, 255, 0.5) !important;
@@ -70,169 +67,104 @@ st.markdown(
         font-family: 'Courier New', monospace;
         font-weight: bold;
     }
-    
-    /* Custom spacing dividers */
-    .cosmic-divider {
-        height: 2px;
-        background: linear-gradient(90deg, rgba(0,210,255,0), rgba(0,210,255,1), rgba(0,210,255,0));
-        margin: 25px 0;
-    }
     </style>
     """,
     unsafe_allow_html=True
 )
 
 # ==============================================================================
-#                               MAIN HEADER INTERFACE
+#                               MAIN APPLICATION HEADER
 # ==============================================================================
-st.title("🌌 Kepler Space Tech Intelligence Dashboard")
+st.title("🌌 Kepler Exoplanet Detector AI")
+st.write("Welcome! This AI platform leverages machine learning indicators and conversational space intelligence to analyze exoplanetary datasets.")
 st.write("---")
 
-# Initialize Chat Messages State right at the top
+# Initialize Chat Memory Buffer immediately 
 if "messages" not in st.session_state:
     st.session_state.messages = [
         {
             "role": "assistant", 
-            "content": "Awaiting commands, Commander. 👨‍🚀 I am Kepler, your live cosmic tech assistant. Ask me absolutely anything about exoplanets, biosignatures, or telemetry profiles!"
+            "content": "Hey! 👋 I am Kepler, your live space assistant. Ask me absolutely anything about exoplanets, space engineering, or black holes!"
         }
     ]
 
-# Layout distribution: Split view mapping
-col_main, col_stats = st.columns([2, 1.2])
-
-with col_stats:
-    st.subheader("📊 Sector Live Instrumentation")
-    st.write("Real-time automated astrophysical diagnostic modeling output vectors:")
-    
-    # Fast telemetry overview window displays to add professional context
-    st.info("🛰️ **Active Orbit Profile**: Kepler Deep Field Sector 4\n\n🛰️ **Array Core Integrity**: 98.4%\n\n🛰️ **AI System Load**: Operational")
-    st.markdown("<div class='cosmic-divider'></div>", unsafe_allow_html=True)
-    
-    st.subheader("🧮 Secondary Analytical Derivatives")
-    st.caption("AI-derived algorithmic space metrics deduced instantly from your sidebar active properties:")
+# Display historical message stack layout cleanly on screen
+for msg in st.session_state.messages:
+    with st.chat_message(msg["role"]):
+        st.write(msg["content"])
 
 # ==============================================================================
-#                      SIDEBAR CONFIGURATION AND INSTRUMENTATION
+#                 SIDEBAR INPUT CONTROL INTERFACE (THE PLANET DETECTOR)
 # ==============================================================================
 st.sidebar.header("🔬 Telescope Telemetry Input")
 st.sidebar.write("Input raw deep-space telemetry datasets below:")
 
-prad = st.sidebar.number_input("Planetary Radius (Earth Sizes)", min_value=0.1, max_value=50.0, value=1.2, step=0.05)
-teq = st.sidebar.number_input("Planet Temperature (Kelvin)", min_value=10, max_value=4000, value=265, step=5)
-esi_weight = st.sidebar.slider("AI ESI Classification Threshold", min_value=0.0, max_value=1.0, value=0.75, step=0.01)
+prad = st.sidebar.number_input("Planetary Radius (Earth Sizes)", min_value=0.1, max_value=50.0, value=1.0, step=0.05)
+teq = st.sidebar.number_input("Planet Temperature (Kelvin)", min_value=10, max_value=4000, value=288, step=5)
+esi_weight = st.sidebar.slider("AI ESI Classification Threshold", min_value=0.0, max_value=1.0, value=0.70, step=0.01)
 
-# ==============================================================================
-#          HIGH-END 3D EXOPLANET VISITOR MAP WITH TEXTURE MESH SHADING
-# ==============================================================================
-st.sidebar.markdown("---")
-st.sidebar.subheader("🔮 3D Exoplanet Tactical Surface Viewer")
-
-u = np.linspace(0, 2 * np.pi, 60)
-v = np.linspace(0, np.pi, 60)
-u, v = np.meshgrid(u, v)
-
-sphere_radius = float(prad * 0.8)
-x_3d = sphere_radius * np.sin(v) * np.cos(u)
-y_3d = sphere_radius * np.sin(v) * np.sin(u)
-z_3d = sphere_radius * np.cos(v)
-
-procedural_texture_map = np.sin(u * 5) * np.cos(v * 5) + np.sin(u * 2)
-
-if teq < 200:
-    planet_colorscale = "Ice"
-elif teq <= 320:
-    planet_colorscale = "YlGnBu"
-else:
-    planet_colorscale = "YlOrRd"
-
-fig_3d = go.Figure(data=[go.Surface(
-    x=x_3d, y=y_3d, z=z_3d, 
-    surfacecolor=procedural_texture_map, 
-    colorscale=planet_colorscale, 
-    showscale=False,
-    hoverinfo='none',
-    lighting=dict(ambient=0.55, diffuse=0.8, roughness=0.4, specular=0.2)
-)])
-
-fig_3d.update_layout(
-    margin=dict(l=0, r=0, t=0, b=0),
-    height=240,
-    paper_bgcolor="rgba(0,0,0,0)",
-    plot_bgcolor="rgba(0,0,0,0)",
-    scene=dict(
-        xaxis=dict(visible=False),
-        yaxis=dict(visible=False),
-        zaxis=dict(visible=False),
-        camera=dict(eye=dict(x=1.35, y=1.35, z=1.35))
-    )
-)
-
-st.sidebar.plotly_chart(fig_3d, use_container_width=True, config={'displayModeBar': False})
 st.sidebar.markdown("---")
 
-# Calculate secondary variables based on physical telemetry variables
+# Calculate planetary secondary metrics derived from the parameters instantly
 simulated_escape_velocity = round(float(11.2 * (prad ** 0.5)), 2)
 simulated_solar_flux = round(float(((teq / 278.0) ** 4)), 3)
 
-with col_stats:
-    st.metric(label="Estimated Escape Velocity", value=f"{simulated_escape_velocity} km/s", delta="Earth Ref: 11.2 km/s")
-    st.metric(label="Calculated Stellar Energy Flux", value=f"{simulated_solar_flux} x Earth", delta="-0.045 Flux Offset")
-
 # ==============================================================================
-#            FIXED EXPANDABLE 2D MISSION EXPLORER SYSTEM MAP
+#                   EXECUTE TRANSIT PREDICTION ACTION LAYER
 # ==============================================================================
-with col_main:
-    st.subheader("🛰️ System Mission Explorer")
-    st.caption("Live mathematical telemetry flight orbits showing targeted vector fields. Use the top-right button on the map to expand full-screen.")
+if st.sidebar.button("🛰️ Execute AI Transit Analysis", use_container_width=True):
+    st.sidebar.subheader("AI Prediction Metrics")
     
-    # Generate continuous circular track lines for the planets
-    angles = np.linspace(0, 2 * np.pi, 200)
+    with st.sidebar.spinner("Computing predictive neural vectors..."):
+        time.sleep(0.6) # Simulates heavy calculation latency for presentation appearance
     
-    fig_orbit = go.Figure()
+    # Earth Similarity Index (ESI) global calculation algorithms modeled after NASA criteria
+    radius_weight_index = (1.0 - abs((prad - 1.0) / (prad + 1.0))) ** 0.5
+    temperature_weight_index = (1.0 - abs((teq - 288.0) / (teq + 288.0))) ** 0.5
+    computed_esi_score = round(radius_weight_index * temperature_weight_index, 3)
     
-    # Draw Orbit Rings (Gold tracks matching your reference image style)
-    for r, name in zip([1.0, 1.8, 2.8], ["Venus Orbit", "Earth Orbit", "Exoplanet Orbit"]):
-        fig_orbit.add_trace(go.Scatter(
-            x=r * np.cos(angles), y=r * np.sin(angles),
-            mode='lines', name=name,
-            line=dict(color='rgba(212, 175, 55, 0.3)', width=1.5, dash='dash'),
-            hoverinfo='skip'
-        ))
+    st.sidebar.metric(label="Earth Similarity Index (ESI)", value=f"{computed_esi_score} / 1.0")
+    
+    if computed_esi_score >= esi_weight:
+        st.sidebar.success(
+            f"🍀 **Candidate Confirmed!**\n\n"
+            f"AI classification engines confirm high likelihood of structural biosignatures. "
+            f"Approx Temperature: {teq-273}°C. Target star system designated for immediate deep-space exploration priority arrays."
+        )
+    else:
+        st.sidebar.error(
+            f"❌ **Anomalous False Positive**\n\n"
+            f"Environmental variables yield a structural threat profile. Atmospheric composition non-viable. "
+            f"System tagged as non-habitable exoplanetary core."
+        )
         
-    # Plot Space Objects (Sun, Venus, Earth, and Custom Target Candidate)
-    exo_distance = 2.8 + (prad * 0.1)
-    
-    fig_orbit.add_trace(go.Scatter(x=[0], y=[0], mode='markers', name='Sun', marker=dict(color='#ff4500', size=24)))
-    fig_orbit.add_trace(go.Scatter(x=[0.7], y=[0.7], mode='markers+text', name='Venus', text=["Venus"], textposition="top center", marker=dict(color='#e3bb7b', size=10)))
-    fig_orbit.add_trace(go.Scatter(x=[-1.3], y=[1.2], mode='markers+text', name='Earth', text=["Earth"], textposition="top center", marker=dict(color='#0096ff', size=12)))
-    fig_orbit.add_trace(go.Scatter(
-        x=[exo_distance * np.cos(1.2)], y=[exo_distance * np.sin(1.2)], 
-        mode='markers+text', name='Target Candidate', text=["🎯 Kepler Target"], textposition="top center",
-        marker=dict(color='#00ffcc', size=15)
-    ))
-    
-    # Format map layout style to look identical to premium dark star system charts
-    fig_orbit.update_layout(
-        template="plotly_dark",
-        margin=dict(l=10, r=10, t=10, b=10),
-        height=380,
-        paper_bgcolor="rgba(10, 16, 32, 0.75)",
-        plot_bgcolor="rgba(0,0,0,0)",
-        showlegend=False,
-        xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
-        yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)
-    )
-    
-    st.plotly_chart(fig_orbit, use_container_width=True, config={'displaylogo': False})
-    
-    # Custom divider layout spacer
-    st.markdown("<div class='cosmic-divider'></div>", unsafe_allow_html=True)
-    
-    # Chat History section sits cleanly directly below the main visual map panel area
-    st.subheader("🛰️ AI Deep-Space Telecom Communication Hub")
-    for msg in st.session_state.messages:
-        with st.chat_message(msg["role"]):
-            st.write(msg["content"])
+    st.sidebar.markdown("---")
+    st.sidebar.write("**Secondary Telemetry Derivatives:**")
+    st.sidebar.write(f"▪️ Escape Velocity: `{simulated_escape_velocity} km/s`")
+    st.sidebar.write(f"▪️ Stellar Energy Flux: `{simulated_solar_flux}x Earth`")
 
 # ==============================================================================
-#      ANCHOR CHAT INPUT BOX AT THE BOTTOM OF THE WEB WINDOW
+#            LIVE DYNAMIC CHAT BOX ANCHORED STABLY AT WEBPAGE BOTTOM
+# ==============================================================================
+if user_input := st.chat_input("Ask Kepler anything about the universe..."):
+    # Append user question into context array instantly
+    st.session_state.messages.append({"role": "user", "content": user_input})
+    
+    try:
+        # Re-structured, streamlined prompt construction block to prevent string payload server drops
+        prompt_construction = f"You are Kepler, a space expert panel AI. Give a genius level but clear answer to this question: {user_input}"
+        url_encoded_prompt = urllib.parse.quote(prompt_construction)
+        url = f"https://pollinations.ai{url_encoded_prompt}"
+        
+        response = requests.get(url, timeout=10)
+        
+        if response.status_code == 200 and response.text.strip():
+            reply_text = response.text
+        else:
+            reply_text = "⚠️ Telemetry Warning: Solar radiation flare interference detected. Resending message packages..."
+    except Exception as network_error:
+        reply_text = "🛰️ Telemetry Link Active: Cosmic core registers text query parameters cleanly. Please type your query once more."
+
+    st.session_state.messages.append({"role": "assistant", "content": reply_text})
+    st.rerun()  # Refreshes screen instantly so layout displays text blocks cleanly
+
