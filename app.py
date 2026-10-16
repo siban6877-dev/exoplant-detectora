@@ -1,44 +1,59 @@
 import streamlit as st
 
-# 1. Page Title and Header
-st.set_page_config(page_title="Kepler Exoplanet Detector", page_icon="🌌")
+st.set_page_config(page_title="Kepler Exoplanet Detector", page_icon="🌌", layout="wide")
 st.title("🌌 Kepler Exoplanet Detector AI")
-st.write("Welcome! This AI analyzes space data to find worlds orbiting distant stars.")
+st.write("Welcome! Chat with Kepler, your conversational AI assistant, to discover and evaluate alien worlds.")
 
-# 2. Friendly Chat Bot greeting
-st.subheader("💬 Chat with Kepler AI")
+# 1. Initialize Memory for Chat History
 if "messages" not in st.session_state:
-    st.session_state.messages = [{"role": "assistant", "content": "Hello! I am the Kepler Exoplanet Detector. How can I help you find an alien world today?"}]
+    st.session_state.messages = [
+        {"role": "assistant", "content": "Hey there! 👋 I am Kepler, your space exploration AI. I can analyze telescope data or just chat about space problems. What's on your mind?"}
+    ]
 
-# Display chat messages
+# 2. Display Chat Messages
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.write(msg["content"])
 
-# User Chat Input
-if user_input := st.chat_input("Ask me something (e.g., 'What metrics do you use?')"):
+# 3. Handle Conversational User Input
+if user_input := st.chat_input("Ask Kepler anything... (e.g., 'How long would it take to fly to an exoplanet?')"):
+    # Display user's text
     with st.chat_message("user"):
         st.write(user_input)
     st.session_state.messages.append({"role": "user", "content": user_input})
     
-    # Simple bot replies
-    bot_reply = "I am ready! Use the scientific tools in the sidebar to input telescope data, and I will check if it's a real planet."
-    if "help" in user_input.lower():
-        bot_reply = "To use me, look at the sidebar on the left. Type in the planetary radius and transit depth, then click 'Scan Star'!"
+    # AI Understanding Logic (Natural Language Responses)
+    user_query = user_input.lower()
+    
+    if "how long" in user_query or "time" in user_query or "travel" in user_query:
+        reply = "Great question! Even the closest exoplanet (Proxima Centauri b) is about 4.2 light-years away. If we traveled in our fastest current spacecraft (like the Voyager probe going 38,000 mph), it would take us roughly **73,000 years** to get there! This is why space travel is a massive problem we are trying to solve."
+    
+    elif "live" in user_query or "habitable" in user_query or "water" in user_query:
+        reply = "To live on an exoplanet, it needs to be in the **Goldilocks Zone**—not too hot, and not too cold. It needs a rocky surface and a protective atmosphere to hold liquid water. Right now, we use AI data metrics like planetary radius (`koi_prad`) to narrow down which ones are safe to explore!"
         
-    with st.chat_message("assistant"):
-        st.write(bot_reply)
-    st.session_state.messages.append({"role": "assistant", "content": bot_reply})
-
-# 3. Create Sidebar for Planet Data Input
-st.sidebar.header("🔬 Telescope Telemetry Input")
-prad = st.sidebar.number_input("Planetary Radius (koi_prad)", min_value=0.1, max_value=100.0, value=1.2)
-depth = st.sidebar.number_input("Transit Depth (koi_depth)", min_value=1.0, max_value=10000.0, value=150.0)
-period = st.sidebar.number_input("Orbital Period in Days (koi_period)", min_value=0.5, max_value=500.0, value=10.0)
-
-# 4. Button to Predict
-if st.sidebar.button("🛰️ Scan Star for Planets"):
-    if prad < 5.0 and depth < 500.0:
-        st.sidebar.success("🎉 ANALYSIS COMPLETE: Confirmed Earth-like Exoplanet!")
+    elif "what do you do" in user_query or "help" in user_query or "how to use" in user_query:
+        reply = "I'm a smart filter! You can use the control panel in the left sidebar to input space numbers (like planet size and temperature). I'll calculate the telemetry and classify the world for you instantly!"
+        
+    elif "hello" in user_query or "hi" in user_query or "hey" in user_query:
+        reply = "Hey! Ready to hunt for some alien worlds today? Ask me a space question or try scanning a star using the sidebar menu!"
+        
     else:
-        st.sidebar.error("❌ ANALYSIS COMPLETE: False Positive (Likely a companion star or space noise).")
+        # Fallback response that shows the AI is engaged and listening
+        reply = f"I hear you! You're asking about '{user_input}'. While I'm still learning down here at mission control, my core job is calculating stellar data. Try testing my scanning sensors in the left sidebar or asking me about travel times across galaxies!"
+
+    # Display AI reply
+    with st.chat_message("assistant"):
+        st.write(reply)
+    st.session_state.messages.append({"role": "assistant", "content": reply})
+
+# 4. Sidebar Controls (Keeps your scanning tools active!)
+st.sidebar.header("🔬 Telescope Telemetry Input")
+prad = st.sidebar.number_input("Planetary Radius (Earth Sizes)", min_value=0.1, max_value=50.0, value=1.0)
+teq = st.sidebar.number_input("Planet Temperature (Kelvin)", min_value=50, max_value=3000, value=288)
+
+if st.sidebar.button("🛰️ Scan Star"):
+    st.sidebar.markdown("---")
+    if 0.5 <= prad <= 2.0 and 180 <= teq <= 310:
+        st.sidebar.success(f"🍀 **Match Found!** A rocky world at {teq-273}°C. It can hold liquid water!")
+    else:
+        st.sidebar.error("❌ **False Positive:** This world's extreme environment cannot support life.")
