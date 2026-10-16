@@ -1,21 +1,20 @@
-GEMINI_API_KEY = st.secrets["GEMINI_KEY"]
 import streamlit as st
 from google import genai
 
-st.set_page_config(page_title="Kepler Exoplanet Detector", page_icon="🌌", layout="wide")
-st.title("🌌 Kepler Exoplanet Detector AI")
-st.write("Welcome! This chatbot is powered by Google Gemini to discuss anything about space, astronomy, and exoplanets.")
-
-# 1. Securely initialize the Gemini AI Client
-# Replace the placeholder text below with your actual API key string inside the quotation marks
-GEMINI_API_KEY = "PASTE_YOUR_API_KEY_HERE"
+# 1. Securely fetch your secret password key AFTER importing streamlit
+GEMINI_API_KEY = st.secrets["GEMINI_KEY"]
 
 try:
     client = genai.Client(api_key=GEMINI_API_KEY)
 except Exception as e:
-    st.error("AI Brain Connection Error. Make sure your Gemini API Key is pasted correctly in the code!")
+    st.error("AI Brain Connection Error. Make sure your Gemini API Key is pasted correctly in the Secrets box!")
 
-# 2. Setup Conversational Memory State
+# 2. Page Title and Configuration
+st.set_page_config(page_title="Kepler Exoplanet Detector", page_icon="🌌", layout="wide")
+st.title("🌌 Kepler Exoplanet Detector AI")
+st.write("Welcome! This chatbot is powered by Google Gemini to discuss anything about space, astronomy, and exoplanets.")
+
+# 3. Setup Conversational Memory State
 if "messages" not in st.session_state:
     st.session_state.messages = [
         {"role": "assistant", "content": "Hey! 👋 I am Kepler, a live AI space assistant. Ask me absolutely anything about exoplanets, space engineering, or mission timelines, and I will generate an answer for you!"}
@@ -26,7 +25,7 @@ for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.write(msg["content"])
 
-# 3. Handle Live Dynamic Chat Input
+# 4. Handle Live Dynamic Chat Input
 if user_input := st.chat_input("Ask Kepler anything about the universe..."):
     # Render user prompt
     with st.chat_message("user"):
@@ -37,14 +36,12 @@ if user_input := st.chat_input("Ask Kepler anything about the universe..."):
     with st.chat_message("assistant"):
         with st.spinner("Consulting mission archives... 🛰️"):
             try:
-                # System prompt sets the personality and constraints for the AI
                 system_instruction = (
                     "You are Kepler, an elite NASA astronomer chatbot helping middle school students. "
                     "Be friendly, conversational, explain complex space physics using simple terminology, "
                     "and handle any arbitrary space question accurately."
                 )
                 
-                # Fetch output from gemini-2.5-flash
                 response = client.models.generate_content(
                     model='gemini-2.5-flash',
                     contents=user_input,
@@ -58,7 +55,7 @@ if user_input := st.chat_input("Ask Kepler anything about the universe..."):
             
     st.session_state.messages.append({"role": "assistant", "content": reply_text})
 
-# 4. Sidebar Calculation Mechanics
+# 5. Sidebar Calculation Mechanics
 st.sidebar.header("🔬 Telescope Telemetry Input")
 prad = st.sidebar.number_input("Planetary Radius (Earth Sizes)", min_value=0.1, max_value=50.0, value=1.0)
 teq = st.sidebar.number_input("Planet Temperature (Kelvin)", min_value=50, max_value=3000, value=288)
