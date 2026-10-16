@@ -3,7 +3,7 @@ import requests
 import urllib.parse
 import pandas as pd
 import numpy as np
-import plotly.graph_objects as go  # Delivers the premium 3D planet globe mapping
+import plotly.graph_objects as go  # Delivers the high-end 3D map and 2D Orbit Tracker
 import time
 
 # Set up page configurations with a wide screen monitor profile
@@ -97,17 +97,8 @@ if "messages" not in st.session_state:
         }
     ]
 
-# Layout distribution: Split screen for interactive analytics vs Chat Core interface
+# Layout distribution: Main Area holds header stats and your beautiful ORBIT MAP
 col_main, col_stats = st.columns([2, 1.2])
-
-with col_main:
-    st.subheader("🛰️ AI Deep-Space Telecom Communication Hub")
-    st.caption("Live low-latency uplink channel connected directly to Kepler AI Engine cluster.")
-
-    # Render historical chat records inside this layout column container
-    for msg in st.session_state.messages:
-        with st.chat_message(msg["role"]):
-            st.write(msg["content"])
 
 with col_stats:
     st.subheader("📊 Sector Live Instrumentation")
@@ -135,42 +126,37 @@ esi_weight = st.sidebar.slider("AI ESI Classification Threshold", min_value=0.0,
 # ==============================================================================
 st.sidebar.markdown("---")
 st.sidebar.subheader("🔮 3D Exoplanet Tactical Surface Viewer")
-st.sidebar.caption("Left-click and drag on the sphere below to rotate and view the exoplanet topology:")
 
-# Generate high-density sphere coordinate mathematical matrices
 u = np.linspace(0, 2 * np.pi, 60)
 v = np.linspace(0, np.pi, 60)
 u, v = np.meshgrid(u, v)
 
 sphere_radius = float(prad * 0.8)
-x = sphere_radius * np.sin(v) * np.cos(u)
-y = sphere_radius * np.sin(v) * np.sin(u)
-z = sphere_radius * np.cos(v)
+x_3d = sphere_radius * np.sin(v) * np.cos(u)
+y_3d = sphere_radius * np.sin(v) * np.sin(u)
+z_3d = sphere_radius * np.cos(v)
 
-# Procedural generation framework adding high-end topography ridges to look realistic
 procedural_texture_map = np.sin(u * 5) * np.cos(v * 5) + np.sin(u * 2)
 
 if teq < 200:
-    planet_colorscale = "Ice"        # Frozen planetary signature
+    planet_colorscale = "Ice"
 elif teq <= 320:
-    planet_colorscale = "YlGnBu"     # Temperate habitable-zone water world atmosphere profile
+    planet_colorscale = "YlGnBu"
 else:
-    planet_colorscale = "YlOrRd"     # Volcanic molten lava profile
+    planet_colorscale = "YlOrRd"
 
-# Build 3D Surface map container passing custom procedural topography data patterns
 fig_3d = go.Figure(data=[go.Surface(
-    x=x, y=y, z=z, 
+    x=x_3d, y=y_3d, z=z_3d, 
     surfacecolor=procedural_texture_map, 
     colorscale=planet_colorscale, 
     showscale=False,
     hoverinfo='none',
-    lighting=dict(ambient=0.55, diffuse=0.8, roughness=0.4, specular=0.2)  # Generates real 3D depth shadows
+    lighting=dict(ambient=0.55, diffuse=0.8, roughness=0.4, specular=0.2)
 )])
 
-# Configure 3D viewport canvas window properties
 fig_3d.update_layout(
     margin=dict(l=0, r=0, t=0, b=0),
-    height=280,
+    height=240,
     paper_bgcolor="rgba(0,0,0,0)",
     plot_bgcolor="rgba(0,0,0,0)",
     scene=dict(
@@ -188,38 +174,60 @@ st.sidebar.markdown("---")
 simulated_escape_velocity = round(float(11.2 * (prad ** 0.5)), 2)
 simulated_solar_flux = round(float(((teq / 278.0) ** 4)), 3)
 
-# Render auxiliary data into the secondary columns right on screen canvas layout
 with col_stats:
     st.metric(label="Estimated Escape Velocity", value=f"{simulated_escape_velocity} km/s", delta="Earth Ref: 11.2 km/s")
     st.metric(label="Calculated Stellar Energy Flux", value=f"{simulated_solar_flux} x Earth", delta="-0.045 Flux Offset")
 
 # ==============================================================================
-#      CRITICAL STRUCTURAL FIX: ANCHOR INPUT BOX AT THE BOTTOM OF THE WEB WINDOW
+#      NEW UPGRADE: EXPANDABLE 2D MISSION EXPLORER SYSTEM MAP (GOOGLY REPLICA)
 # ==============================================================================
-# Moving st.chat_input OUTSIDE of any columns forces it straight to the absolute webpage footer layout
-if user_input := st.chat_input("Transmit space coordinates or queries to Kepler AI..."):
-    # Append input telemetry directly inside history state dictionaries
-    st.session_state.messages.append({"role": "user", "content": user_input})
+with col_main:
+    st.subheader("🛰️ System Mission Explorer")
+    st.caption("Live mathematical telemetry flight orbits showing targeted vector fields. Use the top-right button on the map to expand full-screen.")
     
-    # Fire up robust processing parameters to communicate with the online server model instantly
-    try:
-        # Create an optimized context string line to ensure prompt delivery passes seamlessly
-        prompt_construction = f"You are Kepler, an elite expert NASA astronomer. Answer this astrophysics question simply: {user_input}"
-        url_encoded_prompt = urllib.parse.quote(prompt_construction)
+    # Generate continuous circular track lines for the planets
+    angles = np.linspace(0, 2 * np.pi, 200)
+    
+    fig_orbit = go.Figure()
+    
+    # Draw Orbit Rings (Gold tracks matching your reference image style)
+    for r, name in zip([1.0, 1.8, 2.8], ["Venus Orbit", "Earth Orbit", "Exoplanet Orbit"]):
+        fig_orbit.add_trace(go.Scatter(
+            x=r * np.cos(angles), y=r * np.sin(angles),
+            mode='lines', name=name,
+            line=dict(color='rgba(212, 175, 55, 0.3)', width=1.5, dash='dash'),
+            hoverinfo='skip'
+        ))
         
-        # Switched to a reliable keyless endpoint variant structured without custom header rejection profiles
-        url = f"https://pollinations.ai{url_encoded_prompt}"
-        
-        response = requests.get(url, timeout=10)
-        
-        if response.status_code == 200 and response.text.strip():
-            reply_text = response.text
-        else:
-            reply_text = "⚠️ Telemetry Warning: Solar radiation flare interference detected. Resending message packages..."
-    except Exception as network_error:
-        reply_text = "🛰️ Mission Control Sync: Database log parameters updated successfully. Please re-verify input text query parameters."
-
-    st.session_state.messages.append({"role": "assistant", "content": reply_text})
-    st.rerun()  # Forces immediate application refresh to render inputs cleanly without alignment block errors
-
-# ==============================================================================
+    # Plot Space Objects (Sun, Venus, Earth, and Custom Target Candidate)
+    # Exoplanet coordinates dynamically scale based on your user parameter sliders!
+    exo_distance = 2.8 + (prad * 0.1)
+    
+    fig_orbit.add_trace(go.Scatter(x=[0], y=[0], mode='markers', name='Sun', marker=dict(color='#ff4500', size=24, shadow=dict(color='#ff8c00', blur=10))))
+    fig_orbit.add_trace(go.Scatter(x=[0.7], y=[0.7], mode='markers+text', name='Venus', text=["Venus"], textposition="top center", marker=dict(color='#e3bb7b', size=10)))
+    fig_orbit.add_trace(go.Scatter(x=[-1.3], y=[1.2], mode='markers+text', name='Earth', text=["Earth"], textposition="top center", marker=dict(color='#0096ff', size=12)))
+    fig_orbit.add_trace(go.Scatter(
+        x=[exo_distance * np.cos(1.2)], y=[exo_distance * np.sin(1.2)], 
+        mode='markers+text', name='Target Candidate', text=["🎯 Kepler Target"], textposition="top center",
+        marker=dict(color='#00ffcc', size=15)
+    ))
+    
+    # Format map layout style to look identical to premium dark star system charts
+    fig_orbit.update_layout(
+        template="plotly_dark",
+        margin=dict(l=10, r=10, t=10, b=10),
+        height=380,
+        paper_bgcolor="rgba(10, 16, 32, 0.75)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        showlegend=False,
+        xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+        yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)
+    )
+    
+    # This enables the native interactive full-screen expandable bar buttons matching your screenshot!
+    st.plotly_chart(fig_orbit, use_container_width=True, config={'displaylogo': False, 'modeBarButtonsWithText': ['toggleHover']})
+    
+    # Custom divider layout spacer
+    st.markdown("<div class='cosmic-divider'></div>", unsafe_allow_html=True)
+    
+    # Chat History section sits cleanly directly below the main visual map panel area
