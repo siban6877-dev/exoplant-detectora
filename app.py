@@ -97,7 +97,7 @@ if "messages" not in st.session_state:
         }
     ]
 
-# Layout distribution: Main Area holds header stats and your beautiful ORBIT MAP
+# Layout distribution: Split view mapping
 col_main, col_stats = st.columns([2, 1.2])
 
 with col_stats:
@@ -179,7 +179,7 @@ with col_stats:
     st.metric(label="Calculated Stellar Energy Flux", value=f"{simulated_solar_flux} x Earth", delta="-0.045 Flux Offset")
 
 # ==============================================================================
-#      NEW UPGRADE: EXPANDABLE 2D MISSION EXPLORER SYSTEM MAP (GOOGLY REPLICA)
+#            FIXED EXPANDABLE 2D MISSION EXPLORER SYSTEM MAP
 # ==============================================================================
 with col_main:
     st.subheader("🛰️ System Mission Explorer")
@@ -203,7 +203,8 @@ with col_main:
     # Exoplanet coordinates dynamically scale based on your user parameter sliders!
     exo_distance = 2.8 + (prad * 0.1)
     
-    fig_orbit.add_trace(go.Scatter(x=[0], y=[0], mode='markers', name='Sun', marker=dict(color='#ff4500', size=24, shadow=dict(color='#ff8c00', blur=10))))
+    # FIXED: Replaced invalid shadow argument and fixed syntax empty commas
+    fig_orbit.add_trace(go.Scatter(x=[0], y=[0], mode='markers', name='Sun', marker=dict(color='#ff4500', size=24)))
     fig_orbit.add_trace(go.Scatter(x=[0.7], y=[0.7], mode='markers+text', name='Venus', text=["Venus"], textposition="top center", marker=dict(color='#e3bb7b', size=10)))
     fig_orbit.add_trace(go.Scatter(x=[-1.3], y=[1.2], mode='markers+text', name='Earth', text=["Earth"], textposition="top center", marker=dict(color='#0096ff', size=12)))
     fig_orbit.add_trace(go.Scatter(
@@ -225,9 +226,11 @@ with col_main:
     )
     
     # This enables the native interactive full-screen expandable bar buttons matching your screenshot!
-    st.plotly_chart(fig_orbit, use_container_width=True, config={'displaylogo': False, 'modeBarButtonsWithText': ['toggleHover']})
+    st.plotly_chart(fig_orbit, use_container_width=True, config={'displaylogo': False})
     
     # Custom divider layout spacer
     st.markdown("<div class='cosmic-divider'></div>", unsafe_allow_html=True)
     
     # Chat History section sits cleanly directly below the main visual map panel area
+    st.subheader("🛰️ AI Deep-Space Telecom Communication Hub")
+    for msg in st.session_state.messages:
