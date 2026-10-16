@@ -200,10 +200,8 @@ with col_main:
         ))
         
     # Plot Space Objects (Sun, Venus, Earth, and Custom Target Candidate)
-    # Exoplanet coordinates dynamically scale based on your user parameter sliders!
     exo_distance = 2.8 + (prad * 0.1)
     
-    # FIXED: Replaced invalid shadow argument and fixed syntax empty commas
     fig_orbit.add_trace(go.Scatter(x=[0], y=[0], mode='markers', name='Sun', marker=dict(color='#ff4500', size=24)))
     fig_orbit.add_trace(go.Scatter(x=[0.7], y=[0.7], mode='markers+text', name='Venus', text=["Venus"], textposition="top center", marker=dict(color='#e3bb7b', size=10)))
     fig_orbit.add_trace(go.Scatter(x=[-1.3], y=[1.2], mode='markers+text', name='Earth', text=["Earth"], textposition="top center", marker=dict(color='#0096ff', size=12)))
@@ -225,7 +223,6 @@ with col_main:
         yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)
     )
     
-    # This enables the native interactive full-screen expandable bar buttons matching your screenshot!
     st.plotly_chart(fig_orbit, use_container_width=True, config={'displaylogo': False})
     
     # Custom divider layout spacer
@@ -234,3 +231,8 @@ with col_main:
     # Chat History section sits cleanly directly below the main visual map panel area
     st.subheader("🛰️ AI Deep-Space Telecom Communication Hub")
     for msg in st.session_state.messages:
+        with st.chat_message(msg["role"]):
+            st.write(msg["content"])
+
+# ==============================================================================
+#      ANCHOR CHAT INPUT BOX AT THE BOTTOM OF THE WEB WINDOW
